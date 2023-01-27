@@ -63,7 +63,7 @@ export default function Rssa() {
 				'Content-Type': 'application/json',
 				"Access-Control-Allow-Headers": "*",
 				"Access-Control-Allow-Origin": "*",
-				"Access-Control-Allow-Methods": "*"   
+				"Access-Control-Allow-Methods": "*"
 			}
 		})
 			.then((response): Promise<movie[]> => response.json())
@@ -77,10 +77,17 @@ export default function Rssa() {
 
 	useEffect(() => {
 		// console.log("movies changed");
-		submitHandler(0);
-		if (rssaCondition > 0) {
-			submitHandler(rssaCondition);
+		if (ratedMoviesData.length > 0) {
+			submitHandler(0);
+			if (rssaCondition > 0) {
+				submitHandler(rssaCondition);
+			}
+		} else {
+			setRecommendedMovies([]);
+			setConditionRecommendations([]);
 		}
+		console.log('RatedMoviesData', ratedMoviesData);
+		console.log('RatedMovies', ratedMovies);
 	}, [ratedMoviesData]);
 
 	const submitHandler = (recType) => {
@@ -97,7 +104,7 @@ export default function Rssa() {
 					'Content-Type': 'application/json',
 					"Access-Control-Allow-Headers": "*",
 					"Access-Control-Allow-Origin": "*",
-					"Access-Control-Allow-Methods": "*" 
+					"Access-Control-Allow-Methods": "*"
 				},
 				body: JSON.stringify({
 					user_id: userid,
@@ -135,7 +142,7 @@ export default function Rssa() {
 
 	const removeMovieHandler = (movieId) => {
 		setRatedMovies(ratedMovies.filter(movie => movie.movie_id !== movieId));
-		setRatedMoviesData(ratedMoviesData.filter(movie => movie.movie_id !== movieId));
+		setRatedMoviesData(ratedMoviesData.filter(movie => movie.item_id !== movieId));
 		setMovies(movies.map(movie => (
 			movie.movie_id === movieId ? {
 				...movie, rating: 0
@@ -156,14 +163,14 @@ export default function Rssa() {
 				<Col md={7}>
 					<div className="sidePanel">
 						{/* <div> */}
-							<h5>Movies You Rated</h5>
-							<div className="movieRibbon">
-								{ratedMovies.length > 0 && ratedMovies.map((movie) =>
-									<MovieRibbonItem key={'"rated_' + movie.movie_id + '"'}
-										isLoading={false}
-										movieItem={movie} showStarRating={true} allowRemove={true}
-										removeItemCallback={removeMovieHandler} />)}
-							</div>
+						<h5>Movies You Rated</h5>
+						<div className="movieRibbon">
+							{ratedMovies.length > 0 && ratedMovies.map((movie) =>
+								<MovieRibbonItem key={'"rated_' + movie.movie_id + '"'}
+									isLoading={false}
+									movieItem={movie} showStarRating={true} allowRemove={true}
+									removeItemCallback={removeMovieHandler} />)}
+						</div>
 						{/* </div> */}
 					</div>
 					<div className="sidePanel">
@@ -191,10 +198,13 @@ export default function Rssa() {
 											movieItem={movie} showStarRating={false} containerClass="recItem" />)
 										:
 										<div className="ribbonButtonDiv">
-											<Button variant="primary" disabled={!loading && ratedMovies.length === 0}
+											<p>
+												Please rate movies on the left to get recommendations.
+											</p>
+											{/* <Button variant="primary" disabled={!loading && ratedMovies.length === 0}
 												onClick={() => submitHandler(0)}>
 												Get Recommendations
-											</Button>
+											</Button> */}
 										</div>
 									}
 								</div>
